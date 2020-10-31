@@ -17,15 +17,15 @@ let app_data= [],
 	formatedDates=[];
 
 //The logged in users location/country code
-let country_code = geoplugin_countryCode();
-console.log(country_code);
+/*let country_code = geoplugin_countryCode();
+console.log(country_code);*/
 //if the country is not in the countriesData.js let the default value be India
 let user_country='India';    
-country_list.forEach((country) => {
+/*country_list.forEach((country) => {
   if (country.code == country_code) {
     user_country = country.name;
   }
-});
+});*/
 
 function fetchData(user_country){
 
