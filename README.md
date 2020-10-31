@@ -8,9 +8,25 @@ REST Client
 npm intellisense
 Bracket Pair Colorizer 2
 open in browser
-______________________________________________________________________________________________________
-To know the location of the person:
+_
+_________________________________________________________________________________________________
+git init
+git remote add origin https://github.com/pseudocoders64/covid-tracker.git
+git config --global user.email "email"
+git config --global user.password "password"
+git config --global user.name "name"
+git checkout -b dev
+git commit -m "phase1"
+git add .
+git push -u origin dev
 
+
+git add .
+git commit -m  "phase1-bugsmash1"
+git push
+_____________________________________________________________________________________________________
+To know the location of the person:
+/*Doesn't work without ssl*/
 https://www.geoplugin.com/webservices/javascript
 1. add  in your index.html
 <script language="JavaScript" src="http://www.geoplugin.net/javascript.gp" type="text/javascript"></script>
