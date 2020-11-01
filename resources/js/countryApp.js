@@ -1,6 +1,8 @@
 /** Select all elements from index.html*/
 const country_name_element = document.querySelector(".country .name");
 const total_cases_element = document.querySelector(".total-cases .value");
+const active_element = document.querySelector(".active .value");
+const new_active_element = document.querySelector(".active .new-value");
 const new_cases_element = document.querySelector(".total-cases .new-value");
 const recovered_element = document.querySelector(".recovered .value");
 const new_recovered_element = document.querySelector(".recovered .new-value");
@@ -11,6 +13,7 @@ const ctx = document.getElementById("axes_line_chart").getContext("2d");
 //data for app, declare all variables
 let app_data= [],
 	cases_list= [],
+	active_list=[],
 	recovered_list= [],
 	deaths_list =[],
 	dates =[],
@@ -30,7 +33,7 @@ let user_country='India';
 function fetchData(user_country){
 
 	//reset the arrays every time country is changed so that new data can be written
-	cases_list=[],recovered_list=[],deaths_list=[],dates=[],formatedDates=[],indexes=[];
+	cases_list=[],active_list=[],recovered_list=[],deaths_list=[],dates=[],formatedDates=[],indexes=[];
 
 	//API has a lag of 30 mins
 	const toDate =new Date(new Date().setDate(new Date().getDate()-0.5)).toISOString();
@@ -54,11 +57,14 @@ function fetchData(user_country){
 			console.log(data);
 			indexes.forEach(index=>{
 					let DATA=data[index];
-					formatedDates.push(formatDate(DATA.Date));
-					app_data.push(DATA);
-					cases_list.push(DATA.Confirmed);
-					recovered_list.push(DATA.Recovered);
-					deaths_list.push(DATA.Deaths);
+					if(DATA.Province.trim().length==0 && DATA.City.trim().length==0){
+						formatedDates.push(formatDate(DATA.Date));
+						app_data.push(DATA);
+						active_list.push(DATA.Active);
+						cases_list.push(DATA.Confirmed);
+						recovered_list.push(DATA.Recovered);
+						deaths_list.push(DATA.Deaths);
+					}
 			});		
 		  }).then(()=>{
 			  updateUI();
@@ -87,18 +93,41 @@ function updateStats() {
 	/**total cases of latest entry.. replaces the total cases in top of the page */
 	total_cases_element.innerHTML=last_entry.Confirmed || 0; /** if no data, put 0 */
 	/**This is just add the symbol + */
-	new_cases_element.innerHTML=
-	`+${last_entry.Confirmed -before_last_entry.Confirmed}`;
+	let new_cases_count= last_entry.Confirmed -before_last_entry.Confirmed;
+	if(new_cases_count>=0){
+		new_cases_element.innerHTML=`+${new_cases_count}`;
+	}else{
+		new_cases_element.innerHTML=`-${Math.abs(new_cases_count)}`;
+	}
 
+	active_element.innerHTML+=last_entry.Active || 0;
+	
+	let new_active_count= last_entry.Active -before_last_entry.Active;
+	if(new_active_count>=0){
+		new_active_element.innerHTML=`+${new_active_count}`;
+	}else{
+		new_active_element.innerHTML=`-${Math.abs(new_active_count)}`;
+	}
 
 	recovered_element.innerHTML=last_entry.Recovered ||0;
 	/** last but one-last  + is just a sign to show in UI */ 
-	new_recovered_element.innerHTML=
-	`+${last_entry.Recovered -before_last_entry.Recovered}`;
+
+	let new_rec_count= last_entry.Recovered -before_last_entry.Recovered;
+	if(new_rec_count>=0){
+		new_recovered_element.innerHTML=`+${new_rec_count}`;
+	}else{
+		new_recovered_element.innerHTML=`-${Math.abs(new_rec_count)}`;
+	}
 
 	deaths_element.innerHTML=last_entry.Deaths;
-	new_deaths_element.innerHTML=`+${last_entry.Deaths -before_last_entry.Deaths}`;
+	// new_deaths_element.innerHTML=`+${last_entry.Deaths -before_last_entry.Deaths}`;
 
+	let new_death_count= last_entry.Deaths -before_last_entry.Deaths;
+	if(new_death_count>=0){
+		new_deaths_element.innerHTML=`+${new_death_count}`;
+	}else{
+		new_deaths_element.innerHTML=`-${Math.abs(new_death_count)}`;
+	}
 }
 
 //updating the chart
@@ -122,6 +151,14 @@ function axesLinearChart(){
 				backgroundColor:'#ffffff',
 				borderWidth:1,
 				pointRadius: 2.5
+			},{
+				label:'Active',
+				data: active_list,
+				fill:false,   
+				borderColor:'#f9813a',
+				backgroundColor:'#f9813a',
+				borderWidth:1,
+				pointRadius: 2
 			},{
 				label:'Deaths',
 				data: deaths_list,
