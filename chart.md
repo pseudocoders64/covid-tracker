@@ -48,9 +48,8 @@ index.html
 style.css
 .chart{
     width: 80%;
-    height: 70vh;
-    min-height: 500px;
-
+    height: 60%;
+    <!-- min-height: 500px; -->
     margin: 0 auto;
     padding: 50px 0;
 }
