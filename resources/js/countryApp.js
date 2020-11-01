@@ -93,16 +93,18 @@ function updateStats() {
 	/**total cases of latest entry.. replaces the total cases in top of the page */
 	total_cases_element.innerHTML=last_entry.Confirmed || 0; /** if no data, put 0 */
 	/**This is just add the symbol + */
-	let new_cases_count= last_entry.Confirmed -before_last_entry.Confirmed;
+	let new_cases_count= 0
+	new_cases_count=last_entry.Confirmed -before_last_entry.Confirmed;
 	if(new_cases_count>=0){
 		new_cases_element.innerHTML=`+${new_cases_count}`;
 	}else{
 		new_cases_element.innerHTML=`-${Math.abs(new_cases_count)}`;
 	}
 
-	active_element.innerHTML+=last_entry.Active || 0;
+	active_element.innerHTML=last_entry.Active || 0;
 	
-	let new_active_count= last_entry.Active -before_last_entry.Active;
+	let new_active_count= 0;
+	new_active_count=last_entry.Active -before_last_entry.Active;
 	if(new_active_count>=0){
 		new_active_element.innerHTML=`+${new_active_count}`;
 	}else{
@@ -112,7 +114,8 @@ function updateStats() {
 	recovered_element.innerHTML=last_entry.Recovered ||0;
 	/** last but one-last  + is just a sign to show in UI */ 
 
-	let new_rec_count= last_entry.Recovered -before_last_entry.Recovered;
+	let new_rec_count= 0;
+	new_rec_count=last_entry.Recovered -before_last_entry.Recovered;
 	if(new_rec_count>=0){
 		new_recovered_element.innerHTML=`+${new_rec_count}`;
 	}else{
@@ -122,7 +125,8 @@ function updateStats() {
 	deaths_element.innerHTML=last_entry.Deaths;
 	// new_deaths_element.innerHTML=`+${last_entry.Deaths -before_last_entry.Deaths}`;
 
-	let new_death_count= last_entry.Deaths -before_last_entry.Deaths;
+	let new_death_count= 0;
+	new_death_count=last_entry.Deaths -before_last_entry.Deaths;
 	if(new_death_count>=0){
 		new_deaths_element.innerHTML=`+${new_death_count}`;
 	}else{
@@ -195,7 +199,7 @@ function axesLinearChart(){
 //Chart x axis was initially dates. the dates were in 2020-03-17,2020-03-18..
 //didn't like it.
 
-const monthsNames = ["Jan","Feb","Mar","Apr","May",	"Jun","Aug","Sep","Oct","Nov","Dec",];
+const monthsNames = ["Jan","Feb","Mar","Apr","May",	"Jun","Jul","Aug","Sep","Oct","Nov","Dec",];
 function formatDate(dateString) {
 	let date = new Date(dateString);
   
