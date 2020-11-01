@@ -106,6 +106,7 @@ nav ul li a{
 .country,
 .total-cases,
 .recovered,
+.active,
 .deaths{
     height: 100px;
 }
@@ -131,6 +132,11 @@ nav ul li a{
 }
 
 .recovered .value{
+    font-size: 2em;
+    font-weight: bold;
+    color: #009688;
+}
+.active .value{
     font-size: 2em;
     font-weight: bold;
     color: #009688;
@@ -282,6 +288,7 @@ nav ul li a{
     .country,
     .total-cases,
     .recovered,
+    .active,
     .deaths{
         height: 25px;
     }
@@ -356,3 +363,4 @@ nav ul li a{
         clip: rect(0,300px,100px,0);
         opacity: 0;
     }
+}
