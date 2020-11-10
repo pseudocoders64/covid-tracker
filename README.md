@@ -157,3 +157,125 @@ heart beat pulse
                 clip: rect(0,300px,100px,0);
                 opacity: 0;
             }
+        }
+________________________________________________________________________________________________
+
+Maps:
+MAP api: https://docs.mapbox.com/mapbox-gl-js/api/
+
+Include the JavaScript and CSS files in the <head> of your HTML file.
+<script src='https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.js'></script>
+<link href='https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.css' rel='stylesheet' />
+Include the following code in the <body> of your HTML file.
+<div id='map' style='width: 400px; height: 300px;'></div>
+<script>
+mapboxgl.accessToken = 'pk.eyJ1Ijoic2hhbGx5OXNoYXJtYSIsImEiOiJja2d5c3U5YWkwZ3MxMzBxdnM2c3N2NDdqIn0.WG1TVBcTJme3pqkCBL_skQ';
+var map = new mapboxgl.Map({
+container: 'map',
+style: 'mapbox://styles/mapbox/streets-v11', // stylesheet location
+center: [-74.5, 40], // starting position [lng, lat]
+zoom: 9 // starting zoom
+});
+</script>
+
+
+to set markers: include the following code in js file
+
+var marker = new mapboxgl.Marker()
+.setLngLat([30.5, 50.5])    // this will set the long and lat[long, lat] -> long first and then lat else 
+.addTo(map);                //it will throw error that the cordinated must be in the range of -90 to 90
+
+
+get country list having slug and lat and long cordinates, used following code to fetch: 
+
+country_list.forEach(element=>{
+    fetch(`https://api.covid19api.com/dayone/country/${element.Slug}`, {    // element.slug =countryname
+        "method": "GET",
+				"headers": {
+				"X-Access-Token": "5cf9dfd5-3449-485e-b5ae-70a60e997864",
+				}
+		})
+		.then(response=>{
+			return response.json();
+		}).then(data=>{
+            console.log(`{'name':'${data[0].Country}', 'slug':'${element.Slug}','code':'${data[0].CountryCode}','Lat':'${data[0].Lat}','Lon':'${data[0].Lon}'}`);
+         });
+ })
+
+________________________________________________________________________________________________
+
+get countries data and link thm with maps:
+API:
+https://api.covid19api.com/summary
+
+returns data having 3keys: Message, Global, countries.
+We need only the countries hence used data.countries in following code.
+fetch('https://api.covid19api.com/summary',{
+    "method": "GET",
+    "headers": {
+    "X-Access-Token": "5cf9dfd5-3449-485e-b5ae-70a60e997864",
+    }
+})
+.then(response=>{
+return response.json();
+}).then(data=>{
+    indexes=Object.keys(data.Countries);    // https://www.geeksforgeeks.org/object-keys-javascript/
+    indexes.forEach(index=>{                // indexes conains the index of the objs present inside data.Countries
+        let DATA=data.Countries[index];
+        // console.log('country:'+ DATA.Country+'  confirmed: '+DATA.TotalConfirmed+'  NewConfirmed: '+DATA.NewConfirmed);
+    });
+});
+
+
+________________________________________________________________________________________________
+
+https://docs.mapbox.com/help/tutorials/custom-markers-gl-js/#attach-popups-to-markers
+
+linking markers and cases data:
+for every marker i need the cases to be linked, so combined the code of marker creation and fetching the data into one js file.
+
+custom markers:
+1.      var el = document.createElement('div');
+        el.className = 'marker';    //creted class to add the styling
+        
+        markerObjs[i]=new mapboxgl.Marker(el)   // above el used here 
+        .setLngLat([country_list[index].Lon, country_list[index].Lat])
+        .addTo(map);
+
+        styling:
+        .marker {
+            background-image: url('../img/mapMarker2.png');
+            background-size: cover;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+plan:
+1. fetch summary (it will have the cases info but no lat and long)
+2. for each obj in the above fetched summry, create marker for all
+fetch('https://api.covid19api.com/summary',{
+    "method": "GET",
+    "headers": {
+    "X-Access-Token": "5cf9dfd5-3449-485e-b5ae-70a60e997864",
+    }
+})
+.then(response=>{
+return response.json();
+}).then(data=>{
+    const markerObjs=[];
+    let i=0;
+    indexes=Object.keys(data.Countries);    
+    indexes.forEach(index=>{               
+        let DATA=data.Countries[index];
+        var el = document.createElement('div');
+        el.className = 'marker';
+        
+        markerObjs[i]=new mapboxgl.Marker(el)
+        .setLngLat([country_list[index].Lon, country_list[index].Lat])
+        .addTo(map);
+        // console.log('country:'+ DATA.Country+'  confirmed: '+DATA.TotalConfirmed+'  NewConfirmed: '+DATA.NewConfirmed);
+    });
+});
+3. create popup and set inner html for each marker
