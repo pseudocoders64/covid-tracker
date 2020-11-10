@@ -205,3 +205,11 @@ function formatDate(dateString) {
   
 	return `${date.getDate()} ${monthsNames[date.getMonth()]}`;
   }
+
+function setHourAsZero(dateString){
+	let date=new Date(dateString);
+
+	date=date.setHours(0);
+	// return date.toISOString();
+	console.log( date.toISOString());
+}
