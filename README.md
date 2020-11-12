@@ -278,4 +278,3 @@ return response.json();
         // console.log('country:'+ DATA.Country+'  confirmed: '+DATA.TotalConfirmed+'  NewConfirmed: '+DATA.NewConfirmed);
     });
 });
-3. create popup and set inner html for each marker
