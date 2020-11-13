@@ -1,1 +1,215 @@
-const country_name_element=document.querySelector(".country .name"),total_cases_element=document.querySelector(".total-cases .value"),active_element=document.querySelector(".active .value"),new_active_element=document.querySelector(".active .new-value"),new_cases_element=document.querySelector(".total-cases .new-value"),recovered_element=document.querySelector(".recovered .value"),new_recovered_element=document.querySelector(".recovered .new-value"),deaths_element=document.querySelector(".deaths .value"),new_deaths_element=document.querySelector(".deaths .new-value"),ctx=document.getElementById("axes_line_chart").getContext("2d");let my_chart,app_data=[],cases_list=[],active_list=[],recovered_list=[],deaths_list=[],dates=[],formatedDates=[],user_country="India";function fetchData(e){cases_list=[],active_list=[],recovered_list=[],deaths_list=[],dates=[],formatedDates=[],indexes=[];const t=new Date((new Date).setDate((new Date).getDate()-.5)).toISOString();console.log(e),fetch(`https://api.covid19api.com/country/${e}?from=2020-01-01T00:00:00Z&to=${t}`,{method:"GET",headers:{"X-Access-Token":"5cf9dfd5-3449-485e-b5ae-70a60e997864"}}).then(e=>e.json()).then(e=>{indexes=Object.keys(e),console.log(e),indexes.forEach(t=>{let a=e[t];0==a.Province.trim().length&&0==a.City.trim().length&&(formatedDates.push(formatDate(a.Date)),app_data.push(a),active_list.push(a.Active),cases_list.push(a.Confirmed),recovered_list.push(a.Recovered),deaths_list.push(a.Deaths))})}).then(()=>{updateUI()}).catch(e=>{console.log(e),alert("Please try after sometime")})}function updateUI(){updateStats(),axesLinearChart()}function updateStats(){let e=app_data[app_data.length-1],t=app_data[app_data.length-2];country_name_element.innerHTML=e.Country,total_cases_element.innerHTML=e.Confirmed||0;let a=0;a=e.Confirmed-t.Confirmed,new_cases_element.innerHTML=a>=0?`+${a}`:`-${Math.abs(a)}`,active_element.innerHTML=e.Active||0;let n=0;n=e.Active-t.Active,new_active_element.innerHTML=n>=0?`+${n}`:`-${Math.abs(n)}`,recovered_element.innerHTML=e.Recovered||0;let o=0;o=e.Recovered-t.Recovered,new_recovered_element.innerHTML=o>=0?`+${o}`:`-${Math.abs(o)}`,deaths_element.innerHTML=e.Deaths;let r=0;r=e.Deaths-t.Deaths,new_deaths_element.innerHTML=r>=0?`+${r}`:`-${Math.abs(r)}`}function axesLinearChart(){my_chart&&my_chart.destroy(),my_chart=new Chart(ctx,{type:"line",data:{datasets:[{label:"Cases",data:cases_list,fill:!1,borderColor:"#ffffff",backgroundColor:"#ffffff",borderWidth:1,pointRadius:2.5},{label:"Active",data:active_list,fill:!1,borderColor:"#f9813a",backgroundColor:"#f9813a",borderWidth:1,pointRadius:2},{label:"Deaths",data:deaths_list,fill:!1,borderColor:"#f44336",backgroundColor:"#f44336",borderWidth:1,pointRadius:2},{label:"Recovered",data:recovered_list,fill:!1,borderColor:"#009688",backgroundColor:"#009688",borderWidth:1,pointRadius:2.5}],labels:formatedDates},options:{responsive:!0,maintainAspectRatio:!1}})}fetchData(user_country);const monthsNames=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];function formatDate(e){let t=new Date(e);return`${t.getDate()} ${monthsNames[t.getMonth()]}`}function setHourAsZero(e){let t=new Date(e);t=t.setHours(0),console.log(t.toISOString())}
+/** Select all elements from index.html*/
+const country_name_element = document.querySelector(".country .name");
+const total_cases_element = document.querySelector(".total-cases .value");
+const active_element = document.querySelector(".active .value");
+const new_active_element = document.querySelector(".active .new-value");
+const new_cases_element = document.querySelector(".total-cases .new-value");
+const recovered_element = document.querySelector(".recovered .value");
+const new_recovered_element = document.querySelector(".recovered .new-value");
+const deaths_element = document.querySelector(".deaths .value");
+const new_deaths_element = document.querySelector(".deaths .new-value");
+const ctx = document.getElementById("axes_line_chart").getContext("2d");
+
+//data for app, declare all variables
+let app_data= [],
+	cases_list= [],
+	active_list=[],
+	recovered_list= [],
+	deaths_list =[],
+	dates =[],
+	formatedDates=[];
+
+//The logged in users location/country code
+/*let country_code = geoplugin_countryCode();
+console.log(country_code);*/
+//if the country is not in the countriesData.js let the default value be India
+let user_country='India';    
+/*country_list.forEach((country) => {
+  if (country.code == country_code) {
+    user_country = country.name;
+  }
+});*/
+
+function fetchData(user_country){
+
+	//reset the arrays every time country is changed so that new data can be written
+	cases_list=[],active_list=[],recovered_list=[],deaths_list=[],dates=[],formatedDates=[],indexes=[];
+
+	//API has a lag of 30 mins
+	const toDate =new Date(new Date().setDate(new Date().getDate()-0.5)).toISOString();
+
+	//${user_country}
+	//https://api.covid19api.com/country/india?from=2020-10-01T00:00:00Z&to=2020-10-29T00:00:00Z
+	//https://api.covid19api.com/country/${user_country}?from=2020-10-01T00:00:00Z&to=2020-10-29T00:00:00Z
+	/** */
+	console.log(user_country);
+	fetch(`https://api.covid19api.com/country/${user_country}?from=2020-01-01T00:00:00Z&to=${toDate}`, {
+				"method": "GET",
+				"headers": {
+				"X-Access-Token": "5cf9dfd5-3449-485e-b5ae-70a60e997864",
+				}
+		})
+		.then(response=>{
+			return response.json();
+		}).then(data=>{
+			indexes=Object.keys(data);
+			//dates=Object.keys(data);
+			console.log(data);
+			indexes.forEach(index=>{
+					let DATA=data[index];
+					if(DATA.Province.trim().length==0 && DATA.City.trim().length==0){
+						formatedDates.push(formatDate(DATA.Date));
+						app_data.push(DATA);
+						active_list.push(DATA.Active);
+						cases_list.push(DATA.Confirmed);
+						recovered_list.push(DATA.Recovered);
+						deaths_list.push(DATA.Deaths);
+					}
+			});		
+		  }).then(()=>{
+			  updateUI();
+		  }).catch(error=>{
+			  console.log(error);
+			  alert("Please try after sometime");
+		  });
+	  
+	}
+	
+fetchData(user_country);
+
+
+function updateUI() {
+	updateStats();
+	axesLinearChart();
+  }
+
+function updateStats() {
+	let last_entry=app_data[app_data.length-1];
+	let before_last_entry=app_data[app_data.length-2];
+
+	/**replaces the Loading... */
+	country_name_element.innerHTML=last_entry.Country;
+
+	/**total cases of latest entry.. replaces the total cases in top of the page */
+	total_cases_element.innerHTML=last_entry.Confirmed || 0; /** if no data, put 0 */
+	/**This is just add the symbol + */
+	let new_cases_count= 0
+	new_cases_count=last_entry.Confirmed -before_last_entry.Confirmed;
+	if(new_cases_count>=0){
+		new_cases_element.innerHTML=`+${new_cases_count}`;
+	}else{
+		new_cases_element.innerHTML=`-${Math.abs(new_cases_count)}`;
+	}
+
+	active_element.innerHTML=last_entry.Active || 0;
+	
+	let new_active_count= 0;
+	new_active_count=last_entry.Active -before_last_entry.Active;
+	if(new_active_count>=0){
+		new_active_element.innerHTML=`+${new_active_count}`;
+	}else{
+		new_active_element.innerHTML=`-${Math.abs(new_active_count)}`;
+	}
+
+	recovered_element.innerHTML=last_entry.Recovered ||0;
+	/** last but one-last  + is just a sign to show in UI */ 
+
+	let new_rec_count= 0;
+	new_rec_count=last_entry.Recovered -before_last_entry.Recovered;
+	if(new_rec_count>=0){
+		new_recovered_element.innerHTML=`+${new_rec_count}`;
+	}else{
+		new_recovered_element.innerHTML=`-${Math.abs(new_rec_count)}`;
+	}
+
+	deaths_element.innerHTML=last_entry.Deaths;
+	// new_deaths_element.innerHTML=`+${last_entry.Deaths -before_last_entry.Deaths}`;
+
+	let new_death_count= 0;
+	new_death_count=last_entry.Deaths -before_last_entry.Deaths;
+	if(new_death_count>=0){
+		new_deaths_element.innerHTML=`+${new_death_count}`;
+	}else{
+		new_deaths_element.innerHTML=`-${Math.abs(new_death_count)}`;
+	}
+}
+
+//updating the chart
+let my_chart;
+function axesLinearChart(){
+	//resetting the chart first, if there is a change of country, if we don't reset, 
+	//there will be overlapping charts. you will notice only when you hover over them
+	if(my_chart){
+		my_chart.destroy();
+	}
+
+	my_chart = new Chart(ctx, {
+		type: 'line',
+		data: {
+			datasets: [{
+				label:'Cases',       //line name
+				//data: [0, 20, 40, 50]
+				data: cases_list,
+				fill:false,   //makes that line thingy
+				borderColor:'#ffffff',
+				backgroundColor:'#ffffff',
+				borderWidth:1,
+				pointRadius: 2.5
+			},{
+				label:'Active',
+				data: active_list,
+				fill:false,   
+				borderColor:'#f9813a',
+				backgroundColor:'#f9813a',
+				borderWidth:1,
+				pointRadius: 2
+			},{
+				label:'Deaths',
+				data: deaths_list,
+				fill:false,   
+				borderColor:'#f44336',
+				backgroundColor:'#f44336',
+				borderWidth:1,
+				pointRadius: 2
+			}
+			,{
+				label:'Recovered',
+				data: recovered_list,
+				fill:false,   
+				borderColor:'#009688',
+				backgroundColor:'#009688',
+				borderWidth:1,
+				pointRadius: 2.5
+			}],
+			//labels: ['January', 'February', 'March', 'April']
+			//labels:dates ->2020-03-17
+			labels:formatedDates //->17 Mar
+		},
+		options: {
+			responsive:true,
+			maintainAspectRatio:false,
+
+		}
+	});
+
+}
+
+
+
+//Chart x axis was initially dates. the dates were in 2020-03-17,2020-03-18..
+//didn't like it.
+
+const monthsNames = ["Jan","Feb","Mar","Apr","May",	"Jun","Jul","Aug","Sep","Oct","Nov","Dec",];
+function formatDate(dateString) {
+	let date = new Date(dateString);
+  
+	return `${date.getDate()} ${monthsNames[date.getMonth()]}`;
+  }
+
+function setHourAsZero(dateString){
+	let date=new Date(dateString);
+
+	date=date.setHours(0);
+	// return date.toISOString();
+	console.log( date.toISOString());
+}
