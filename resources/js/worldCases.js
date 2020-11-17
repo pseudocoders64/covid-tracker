@@ -6,14 +6,15 @@ mapboxgl.accessToken = map_token;
 var map = new mapboxgl.Map({
 container: 'map',
 style: 'mapbox://styles/mapbox/dark-v10',
-center: [0, 20],
+center: [0, 0],
 zoom: 2,
-renderWorldCopies: false,
-continuousWorld: false,
-noWrap: false,
-overflow: 'clip' | 'wrap' 
+// renderWorldCopies: false,
+// continuousWorld: false,
+// noWrap: false,
+// overflow: 'clip' | 'wrap' 
 });
 
+// map.addControl(new mapboxgl.FullscreenControl());
 
 fetch('https://api.covid19api.com/summary',{
     "method": "GET",
